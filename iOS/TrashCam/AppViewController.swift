@@ -12,11 +12,17 @@ import CoreLocation
 
 class AppViewController: UIViewController {
 
+    @IBOutlet weak var statusLabel: UILabel!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        if canShowCamera() {
+            state = .CameraAvailable
+        }
+        else {
+            state = .CameraNotAvailable
+        }
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -37,7 +43,8 @@ class AppViewController: UIViewController {
 
     enum State: Int, Comparable {
         case Loaded
-        case LocationAuthorizationUnknown
+        case CameraNotAvailable
+        case CameraAvailable
         case RequestingLocationAuthorizationStatus
         case LocationAccessDenied
         case LocationAccessAllowed
@@ -50,20 +57,29 @@ class AppViewController: UIViewController {
             if oldValue == state {
                 return
             }
-
             print("State did change:", oldValue, "->", state)
             switch state {
-            case .LocationAuthorizationUnknown:
-                state = .RequestingLocationAuthorizationStatus
+            case .CameraNotAvailable:
+                statusLabel.text = "Camera not found"
+            case .CameraAvailable:
+                locationManager.delegate = self
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
             case .RequestingLocationAuthorizationStatus:
+                statusLabel.text = "Requesting location access..."
                 locationManager.requestWhenInUseAuthorization()
             case .LocationAccessDenied:
+                statusLabel.text = "Location access denied"
                 locationManager.stopUpdatingLocation()
                 showLocationUnavailableMessage()
             case .LocationAccessAllowed:
                 startUpdatingLocation()
+            case .WaitingForLocation:
+                statusLabel.text = "Getting your location..."
+                locationManager.startUpdatingLocation()
             case .LocationFound:
+                statusLabel.text = "Ready!"
                 print("Location found", locationManager.location)
+                //showCamera()
             default:
                 break
             }
@@ -75,7 +91,6 @@ class AppViewController: UIViewController {
             return
         }
         state = .WaitingForLocation
-        locationManager.startUpdatingLocation()
     }
 }
 
@@ -161,7 +176,6 @@ extension AppViewController {
     func showCamera() {
 
         guard canShowCamera() else {
-            showCameraUnavailableMessage()
             locationManager.stopUpdatingLocation()
             return
         }
