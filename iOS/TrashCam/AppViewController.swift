@@ -193,7 +193,6 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             return
         }
 
-
         guard let metadata = info[UIImagePickerControllerMediaMetadata]?.mutableCopy() as? NSDictionary else {
             print("Missing metadata")
             return
@@ -204,14 +203,9 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             return
         }
 
-        let key = kCGImagePropertyGPSDictionary as String
-//        metadata.setValue(location., forKey: <#T##String#>)
-//        metadata[key] = self.locationManager.location
-
         let mimetype = "image/jpeg"
-        if let data = image.asDataWithMetadata(metadata, mimetype: mimetype) {
+        if let data = image.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: locationManager.heading) {
             print("Upload image")
-
             let newImage = UIImage(data: data)
             imageView.image = newImage
         }
