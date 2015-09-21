@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		D062E91C1BB0744E00A3C257 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E91B1BB0744E00A3C257 /* AppDelegate.swift */; };
-		D062E91E1BB0744E00A3C257 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E91D1BB0744E00A3C257 /* ViewController.swift */; };
 		D062E9211BB0744E00A3C257 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D062E91F1BB0744E00A3C257 /* Main.storyboard */; };
 		D062E9231BB0744E00A3C257 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D062E9221BB0744E00A3C257 /* Assets.xcassets */; };
 		D062E9261BB0744E00A3C257 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D062E9241BB0744E00A3C257 /* LaunchScreen.storyboard */; };
 		D062E9311BB0744E00A3C257 /* TrashCamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E9301BB0744E00A3C257 /* TrashCamTests.swift */; };
 		D062E93C1BB0744E00A3C257 /* TrashCamUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E93B1BB0744E00A3C257 /* TrashCamUITests.swift */; };
+		D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E94C1BB076D400A3C257 /* AppViewController.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,9 +34,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D062E9181BB0744E00A3C257 /* TrashCam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrashCam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D062E9181BB0744E00A3C257 /* Marine Debris.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Marine Debris.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D062E91B1BB0744E00A3C257 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D062E91D1BB0744E00A3C257 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		D062E9201BB0744E00A3C257 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D062E9221BB0744E00A3C257 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D062E9251BB0744E00A3C257 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +46,7 @@
 		D062E9371BB0744E00A3C257 /* TrashCamUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrashCamUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D062E93B1BB0744E00A3C257 /* TrashCamUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashCamUITests.swift; sourceTree = "<group>"; };
 		D062E93D1BB0744E00A3C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D062E94C1BB076D400A3C257 /* AppViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +87,7 @@
 		D062E9191BB0744E00A3C257 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D062E9181BB0744E00A3C257 /* TrashCam.app */,
+				D062E9181BB0744E00A3C257 /* Marine Debris.app */,
 				D062E92C1BB0744E00A3C257 /* TrashCamTests.xctest */,
 				D062E9371BB0744E00A3C257 /* TrashCamUITests.xctest */,
 			);
@@ -98,11 +98,11 @@
 			isa = PBXGroup;
 			children = (
 				D062E91B1BB0744E00A3C257 /* AppDelegate.swift */,
-				D062E91D1BB0744E00A3C257 /* ViewController.swift */,
-				D062E91F1BB0744E00A3C257 /* Main.storyboard */,
+				D062E94C1BB076D400A3C257 /* AppViewController.swift */,
 				D062E9221BB0744E00A3C257 /* Assets.xcassets */,
-				D062E9241BB0744E00A3C257 /* LaunchScreen.storyboard */,
 				D062E9271BB0744E00A3C257 /* Info.plist */,
+				D062E9241BB0744E00A3C257 /* LaunchScreen.storyboard */,
+				D062E91F1BB0744E00A3C257 /* Main.storyboard */,
 			);
 			path = TrashCam;
 			sourceTree = "<group>";
@@ -142,7 +142,7 @@
 			);
 			name = TrashCam;
 			productName = TrashCam;
-			productReference = D062E9181BB0744E00A3C257 /* TrashCam.app */;
+			productReference = D062E9181BB0744E00A3C257 /* Marine Debris.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D062E92B1BB0744E00A3C257 /* TrashCamTests */ = {
@@ -255,7 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D062E91E1BB0744E00A3C257 /* ViewController.swift in Sources */,
+				D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */,
 				D062E91C1BB0744E00A3C257 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -347,7 +347,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -386,7 +386,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -401,7 +401,7 @@
 				INFOPLIST_FILE = TrashCam/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.makaluinc.TrashCam;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Marine Debris";
 			};
 			name = Debug;
 		};
@@ -412,7 +412,7 @@
 				INFOPLIST_FILE = TrashCam/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.makaluinc.TrashCam;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Marine Debris";
 			};
 			name = Release;
 		};
@@ -483,6 +483,7 @@
 				D062E9421BB0744E00A3C257 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D062E9431BB0744E00A3C257 /* Build configuration list for PBXNativeTarget "TrashCamTests" */ = {
 			isa = XCConfigurationList;
@@ -491,6 +492,7 @@
 				D062E9451BB0744E00A3C257 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D062E9461BB0744E00A3C257 /* Build configuration list for PBXNativeTarget "TrashCamUITests" */ = {
 			isa = XCConfigurationList;
@@ -499,6 +501,7 @@
 				D062E9481BB0744E00A3C257 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
