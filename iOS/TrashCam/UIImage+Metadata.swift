@@ -48,17 +48,22 @@ extension UIImage {
         metadata.setValue(location.altitude, forKey: kCGImagePropertyGPSAltitude as String)
         metadata.setValue(altitudeRef, forKey: kCGImagePropertyGPSAltitudeRef as String)
 
-        metadata.setValue(dateFormatters.date.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSTimeStamp as String)
-        metadata.setValue(dateFormatters.time.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSDateStamp as String)
+        metadata.setValue(dateFormatters.date.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSDateStamp as String)
+        metadata.setValue(dateFormatters.time.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSTimeStamp as String)
 
         if let heading = heading {
             metadata.setValue(heading.trueHeading, forKey: kCGImagePropertyGPSImgDirection as String)
             metadata.setValue("T", forKey: kCGImagePropertyGPSImgDirectionRef as String)
         }
 
+        print(metadata)
+
         return asDataWithMetadata(metadata, mimetype: mimetype)
     }
 }
+
+
+// MARK - Private
 
 private struct ISODateFormatters {
 
@@ -82,6 +87,3 @@ private struct ISODateFormatters {
 }
 
 private let dateFormatters = ISODateFormatters()
-
-
-
