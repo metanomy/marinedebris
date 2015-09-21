@@ -14,6 +14,7 @@
 		D062E9311BB0744E00A3C257 /* TrashCamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E9301BB0744E00A3C257 /* TrashCamTests.swift */; };
 		D062E93C1BB0744E00A3C257 /* TrashCamUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E93B1BB0744E00A3C257 /* TrashCamUITests.swift */; };
 		D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E94C1BB076D400A3C257 /* AppViewController.swift */; settings = {ASSET_TAGS = (); }; };
+		D062E94F1BB0A71700A3C257 /* UIImage+Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E94E1BB0A71700A3C257 /* UIImage+Metadata.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		D062E93B1BB0744E00A3C257 /* TrashCamUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashCamUITests.swift; sourceTree = "<group>"; };
 		D062E93D1BB0744E00A3C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D062E94C1BB076D400A3C257 /* AppViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
+		D062E94E1BB0A71700A3C257 /* UIImage+Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Metadata.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			children = (
 				D062E91B1BB0744E00A3C257 /* AppDelegate.swift */,
 				D062E94C1BB076D400A3C257 /* AppViewController.swift */,
+				D062E94E1BB0A71700A3C257 /* UIImage+Metadata.swift */,
 				D062E9221BB0744E00A3C257 /* Assets.xcassets */,
 				D062E9271BB0744E00A3C257 /* Info.plist */,
 				D062E9241BB0744E00A3C257 /* LaunchScreen.storyboard */,
@@ -255,6 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D062E94F1BB0A71700A3C257 /* UIImage+Metadata.swift in Sources */,
 				D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */,
 				D062E91C1BB0744E00A3C257 /* AppDelegate.swift in Sources */,
 			);
