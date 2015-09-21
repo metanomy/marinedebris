@@ -9,82 +9,110 @@
 import UIKit
 import CoreLocation
 
-class AppViewController: UIViewController, CLLocationManagerDelegate {
 
-    deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
-    }
+class AppViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "appWillEnterForeground:", name: UIApplicationWillEnterForegroundNotification, object: nil)
-
-        checkLocationAuthorization()
     }
 
-    // MARK - Location
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if !canShowCamera() {
+            showCameraUnavailableMessage()
+        }
+    }
+
+    // MARK - State
 
     private let locationManager = CLLocationManager()
-    private var currentLocation: CLLocation?
 
-    private var userLocationAuthorized = false {
+    enum State: Int, Comparable {
+        case Loaded
+        case LocationAuthorizationUnknown
+        case RequestingLocationAuthorizationStatus
+        case LocationAccessDenied
+        case LocationAccessAllowed
+        case WaitingForLocation
+        case LocationFound
+    }
+
+    private var state: State = .Loaded {
         didSet {
-            if oldValue == userLocationAuthorized {
+            if oldValue == state {
                 return
             }
 
-            if userLocationAuthorized {
-                locationManager.startUpdatingLocation()
-            }
-            else {
+            print("State did change:", oldValue, "->", state)
+            switch state {
+            case .LocationAuthorizationUnknown:
+                state = .RequestingLocationAuthorizationStatus
+            case .RequestingLocationAuthorizationStatus:
+                locationManager.requestWhenInUseAuthorization()
+            case .LocationAccessDenied:
                 locationManager.stopUpdatingLocation()
+                showLocationUnavailableMessage()
+            case .LocationAccessAllowed:
+                startUpdatingLocation()
+            case .LocationFound:
+                print("Location found", locationManager.location)
+            default:
+                break
             }
         }
     }
 
-    private final func checkLocationAuthorization() {
-        switch CLLocationManager.authorizationStatus() {
-        case .Restricted,
-             .Denied:
-            showLocationAuthorizationUnavailableMessage()
-        case .NotDetermined:
-            locationManager.requestWhenInUseAuthorization()
-        default:
-            userLocationAuthorized = true
+    func startUpdatingLocation() {
+        if state > State.LocationAccessAllowed {
+            return
         }
+        state = .WaitingForLocation
+        locationManager.startUpdatingLocation()
     }
 }
 
-// MARK - Notifications
-
-extension AppViewController {
-
-    func appWillEnterForeground(notification: NSNotification) {
-        checkLocationAuthorization()
-    }
+// Simple operator functions to simplify comparisons
+func <(lhs: AppViewController.State, rhs: AppViewController.State) -> Bool {
+    return lhs.rawValue < rhs.rawValue
 }
+
+func ==(lhs: AppViewController.State, rhs: AppViewController.State) -> Bool {
+    return lhs.rawValue == rhs.rawValue
+}
+
 
 // MARK - Location manager delegate
-
-extension AppViewController {
+extension AppViewController: CLLocationManagerDelegate {
 
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        self.userLocationAuthorized = status == .AuthorizedWhenInUse || status == .AuthorizedAlways
+        switch status {
+        case .NotDetermined:
+            state = .RequestingLocationAuthorizationStatus
+        case .Restricted,
+        .Denied:
+            state = .LocationAccessDenied
+        default:
+            state = .LocationAccessAllowed
+        }
     }
 
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print("Did update location", locations)
-        currentLocation = locations.last
+        if let _ = locations.last {
+            state = .LocationFound
+        }
     }
 }
 
 
 // MARK - Alerts
-
 extension AppViewController {
 
     private final func canOpenSettings() -> Bool {
@@ -94,11 +122,9 @@ extension AppViewController {
         return UIApplication.sharedApplication().canOpenURL(url)
     }
 
-    private final func showLocationAuthorizationUnavailableMessage() {
+    private final func showLocationUnavailableMessage() {
 
-        print("Location authorization restricted.")
-
-        let alertController = UIAlertController(title: "Location Access Restricted", message: "Please enable location access.", preferredStyle: .Alert)
+        let alertController = UIAlertController(title: "Location Unavailable", message: "Please enable location access.", preferredStyle: .Alert)
 
         alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
 
@@ -111,6 +137,58 @@ extension AppViewController {
         }
 
         presentViewController(alertController, animated: true, completion: nil)
+    }
+
+    private final func showCameraUnavailableMessage() {
+
+        let alertController = UIAlertController(title: "Camera Unavailable", message: "This app requires a camera to use.", preferredStyle: .Alert)
+
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
+
+        presentViewController(alertController, animated: true, completion: nil)
+    }
+}
+
+
+// MARK - Image picker controller
+
+extension AppViewController {
+
+    func canShowCamera() -> Bool {
+        return UIImagePickerController.isSourceTypeAvailable(.Camera)
+    }
+
+    func showCamera() {
+
+        guard canShowCamera() else {
+            showCameraUnavailableMessage()
+            locationManager.stopUpdatingLocation()
+            return
+        }
+
+        guard presentedViewController == nil else {
+            return
+        }
+
+        let controller = UIImagePickerController()
+        controller.sourceType = .Camera
+        controller.cameraFlashMode = .Auto
+        controller.allowsEditing = false
+        controller.delegate = self
+        presentViewController(controller, animated: true, completion: nil)
+    }
+}
+
+
+// MARK - Image picker controller delegate
+extension AppViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+
+    }
+
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        dismissViewControllerAnimated(true, completion: nil)
     }
 }
 
