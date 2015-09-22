@@ -522,7 +522,7 @@
 				);
 				INFOPLIST_FILE = TrashCam/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.makaluinc.TrashCam;
+				PRODUCT_BUNDLE_IDENTIFIER = com.makaluinc.trashcam;
 				PRODUCT_NAME = "Marine Debris";
 				SWIFT_OBJC_BRIDGING_HEADER = "TrashCam/TrashCam-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -541,7 +541,7 @@
 				);
 				INFOPLIST_FILE = TrashCam/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.makaluinc.TrashCam;
+				PRODUCT_BUNDLE_IDENTIFIER = com.makaluinc.trashcam;
 				PRODUCT_NAME = "Marine Debris";
 				SWIFT_OBJC_BRIDGING_HEADER = "TrashCam/TrashCam-Bridging-Header.h";
 			};
