@@ -36,25 +36,29 @@ extension UIImage {
             return nil
         }
 
+        let gpsMetaData = NSMutableDictionary()
+
         let latitudeRef = location.coordinate.latitude < 0 ? "S" : "N"
-        metadata.setValue(abs(location.coordinate.latitude), forKey: kCGImagePropertyGPSLatitude as String)
-        metadata.setValue(latitudeRef, forKey: kCGImagePropertyGPSLatitudeRef as String)
+        gpsMetaData.setValue(abs(location.coordinate.latitude), forKey: kCGImagePropertyGPSLatitude as String)
+        gpsMetaData.setValue(latitudeRef, forKey: kCGImagePropertyGPSLatitudeRef as String)
 
         let longitudeRef = location.coordinate.longitude < 0 ? "W" : "E"
-        metadata.setValue(abs(location.coordinate.longitude), forKey: kCGImagePropertyGPSLongitude as String)
-        metadata.setValue(longitudeRef, forKey: kCGImagePropertyGPSLongitudeRef as String)
+        gpsMetaData.setValue(abs(location.coordinate.longitude), forKey: kCGImagePropertyGPSLongitude as String)
+        gpsMetaData.setValue(longitudeRef, forKey: kCGImagePropertyGPSLongitudeRef as String)
 
         let altitudeRef = location.altitude < 0 ? 1 : 0
-        metadata.setValue(location.altitude, forKey: kCGImagePropertyGPSAltitude as String)
-        metadata.setValue(altitudeRef, forKey: kCGImagePropertyGPSAltitudeRef as String)
+        gpsMetaData.setValue(location.altitude, forKey: kCGImagePropertyGPSAltitude as String)
+        gpsMetaData.setValue(altitudeRef, forKey: kCGImagePropertyGPSAltitudeRef as String)
 
-        metadata.setValue(dateFormatters.date.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSDateStamp as String)
-        metadata.setValue(dateFormatters.time.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSTimeStamp as String)
+        gpsMetaData.setValue(dateFormatters.date.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSDateStamp as String)
+        gpsMetaData.setValue(dateFormatters.time.stringFromDate(location.timestamp), forKey: kCGImagePropertyGPSTimeStamp as String)
 
         if let heading = heading {
-            metadata.setValue(heading.trueHeading, forKey: kCGImagePropertyGPSImgDirection as String)
-            metadata.setValue("T", forKey: kCGImagePropertyGPSImgDirectionRef as String)
+            gpsMetaData.setValue(heading.trueHeading, forKey: kCGImagePropertyGPSImgDirection as String)
+            gpsMetaData.setValue("T", forKey: kCGImagePropertyGPSImgDirectionRef as String)
         }
+
+        metadata.setValue(gpsMetaData, forKey: kCGImagePropertyGPSDictionary as String)
 
         print(metadata)
 
