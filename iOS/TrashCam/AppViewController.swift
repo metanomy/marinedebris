@@ -276,8 +276,11 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             dateFormatter.dateFormat = "yyyy_MM_dd_HH_mm_ss"
             let dateString = dateFormatter.stringFromDate(NSDate()) as String
 
+            let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet
+            let deviceName = UIDevice.currentDevice().name.componentsSeparatedByCharactersInSet(characterSet).joinWithSeparator("_")
+
             let tempDirURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
-            let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString).jpg")
+            let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString)_\(deviceName).jpg")
 
             if !data.writeToURL(fileURL, atomically: false) {
                 return showErrorAlert("Image Error", message: "Unable to save image.")
