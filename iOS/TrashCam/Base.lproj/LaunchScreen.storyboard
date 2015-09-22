@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -17,18 +18,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tampa Bay Marine Debris" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0bE-3b-akd">
-                                <rect key="frame" x="202" y="289" width="196" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bay" translatesAutoresizingMaskIntoConstraints="NO" id="ZJd-WT-rtq" userLabel="Background Image View">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tampa Bay Marine Debris" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0bE-3b-akd">
+                                <rect key="frame" x="40" y="283" width="520" height="33"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="0bE-3b-akd" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="20" id="Av5-F2-r6B"/>
+                            <constraint firstItem="ZJd-WT-rtq" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="RwK-OG-y19"/>
                             <constraint firstItem="0bE-3b-akd" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="SzK-1Q-heq"/>
+                            <constraint firstItem="ZJd-WT-rtq" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="gL7-gY-Z9U"/>
+                            <constraint firstAttribute="trailing" secondItem="ZJd-WT-rtq" secondAttribute="trailing" id="ljO-QL-Wj3"/>
                             <constraint firstItem="0bE-3b-akd" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="nD9-hC-Y8b"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="ZJd-WT-rtq" secondAttribute="bottom" id="sis-0N-o0g"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="0bE-3b-akd" secondAttribute="trailing" constant="20" id="wPO-y9-RxY"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -37,4 +47,7 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="bay" width="2196" height="2196"/>
+    </resources>
 </document>
