@@ -14,9 +14,13 @@ class AppViewController: UIViewController {
 
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var previewImageView: UIImageView!
+    @IBOutlet weak var progressView: UIProgressView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        progressView.hidden = true
+        progressView.progress = 0
 
         if UIImagePickerController.isSourceTypeAvailable(.Camera) {
             state = .RequestingLocation
@@ -82,7 +86,7 @@ class AppViewController: UIViewController {
             case .LocationFound:
                 statusLabel.text = "Ready!"
                 print("Location found", locationManager.location)
-                //showCamera()
+                showCamera()
             default:
                 break
             }
@@ -184,6 +188,9 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
 
     func uploadImageAtURL(url: NSURL) {
 
+        statusLabel.text = "Uploading image..."
+        progressView.hidden = false
+
         let uploadRequest = AWSS3TransferManagerUploadRequest()
         uploadRequest.bucket = "trashcam"
         uploadRequest.key = url.lastPathComponent
@@ -191,19 +198,36 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
 
         uploadRequest.uploadProgress = { bytesSent, totalBytesSent, totalBytesExpectedToSend in
             print(bytesSent, totalBytesSent, totalBytesExpectedToSend)
+            let completed = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
+            dispatch_async(dispatch_get_main_queue()) {
+                self.progressView.progress = Float(completed)
+            }
         }
 
         let upload = AWSS3TransferManager.defaultS3TransferManager().upload(uploadRequest)
         upload.continueWithBlock { (task) -> AnyObject! in
             dispatch_async(dispatch_get_main_queue()) {
-                print("TASK", task)
 
-                if let error = task.error {
-                    print("ERROR:", error)
+                self.progressView.progress = 0
+                self.progressView.hidden = true
+
+                if let _ = task.error {
+                    let alertController = UIAlertController(title: "Upload Failed", message: "Unable to upload image. Please check your network connection and try again.", preferredStyle: .Alert)
+                    alertController.addAction(UIAlertAction(title: "Retry", style: .Default, handler: { action in
+                        self.uploadImageAtURL(url)
+                    }))
+                    alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: { action in
+                        self.statusLabel.text = ""
+                        try! NSFileManager.defaultManager().removeItemAtURL(url)
+                        self.showCamera()
+                    }))
+                    self.presentViewController(alertController, animated: true, completion: nil)
                 }
 
-                else if let result = task.result {
-                    print("RESULT", result)
+                else {
+                    self.statusLabel.text = ""
+                    try! NSFileManager.defaultManager().removeItemAtURL(url)
+                    self.showCamera()
                 }
             }
 
@@ -233,7 +257,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             return showErrorAlert("Location Error", message: "Unable to aquire location.")
         }
 
-        let maxImageDimension = 1536
+        let maxImageDimension = 2048
         let maxSize = image.sizeThatFits(CGSize(width: maxImageDimension, height: maxImageDimension))
         let resizedImage = image.resize(maxSize, quality: .High)
         let mimetype = "image/jpeg"
@@ -254,7 +278,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             let dateString = dateFormatter.stringFromDate(NSDate()) as String
 
             let tempDirURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
-            let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString).jpeg")
+            let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString).jpg")
 
             if !data.writeToURL(fileURL, atomically: false) {
                 return showErrorAlert("Image Error", message: "Unable to save image.")
