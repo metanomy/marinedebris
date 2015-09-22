@@ -185,6 +185,10 @@ extension AppViewController {
 // MARK - Image picker controller delegate
 extension AppViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    func uploadImageAtURL(url: NSURL) {
+        print(url)
+    }
+
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 
         guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
@@ -217,16 +221,29 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
 
         if let data = resizedImage.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: locationManager.heading) {
 
-            let documentsDirURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-            let fileURL = documentsDirURL.URLByAppendingPathComponent("test.jpg")
-            data.writeToURL(fileURL, atomically: false)
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "yyyy_MM_dd_HH_mm_ss"
+            let dateString = dateFormatter.stringFromDate(NSDate()) as String
 
-            print("image", fileURL)
-            let newImage = UIImage(contentsOfFile: fileURL.path!)
-            imageView.image = newImage
+            let tempDirURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
+            let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString).jpeg")
+
+            if !data.writeToURL(fileURL, atomically: false) {
+                let alertController = UIAlertController(title: "Image Error", message: "There was an error saving the image please try again.", preferredStyle: .Alert)
+                alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
+                presentViewController(alertController, animated: true, completion: nil)
+                return
+            }
+
+            imageView.image = resizedImage
+
+            uploadImageAtURL(fileURL)
         }
         else {
-            print("NO DATA")
+            let alertController = UIAlertController(title: "Image Error", message: "There was an error creating the image please try again.", preferredStyle: .Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
+            presentViewController(alertController, animated: true, completion: nil)
+            return
         }
 
         dismissViewControllerAnimated(true) {
