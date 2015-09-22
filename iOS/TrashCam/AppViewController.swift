@@ -13,7 +13,7 @@ import ImageIO
 class AppViewController: UIViewController {
 
     @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var previewImageView: UIImageView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,8 +53,6 @@ class AppViewController: UIViewController {
         case LocationAccessAllowed
         case WaitingForLocation
         case LocationFound
-        case PresentingCamera
-        case UploadingImage
     }
 
     private var state: State = .Loaded {
@@ -84,7 +82,7 @@ class AppViewController: UIViewController {
             case .LocationFound:
                 statusLabel.text = "Ready!"
                 print("Location found", locationManager.location)
-                showCamera()
+                //showCamera()
             default:
                 break
             }
@@ -102,7 +100,6 @@ class AppViewController: UIViewController {
         guard state == .LocationFound else {
             return
         }
-        state = .PresentingCamera
         let controller = UIImagePickerController()
         controller.sourceType = .Camera
         controller.cameraFlashMode = .Auto
@@ -192,6 +189,10 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
         uploadRequest.key = url.lastPathComponent
         uploadRequest.body = url
 
+        uploadRequest.uploadProgress = { bytesSent, totalBytesSent, totalBytesExpectedToSend in
+            print(bytesSent, totalBytesSent, totalBytesExpectedToSend)
+        }
+
         let upload = AWSS3TransferManager.defaultS3TransferManager().upload(uploadRequest)
         upload.continueWithBlock { (task) -> AnyObject! in
             dispatch_async(dispatch_get_main_queue()) {
@@ -259,7 +260,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
                 return showErrorAlert("Image Error", message: "Unable to save image.")
             }
 
-            imageView.image = resizedImage
+            previewImageView.image = resizedImage
 
             uploadImageAtURL(fileURL)
         }
