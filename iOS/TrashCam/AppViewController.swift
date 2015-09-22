@@ -182,31 +182,47 @@ extension AppViewController {
     }
 }
 
-
 // MARK - Image picker controller delegate
 extension AppViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 
         guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
-            print("Unable to get image")
-            return
-        }
-
-        guard let metadata = info[UIImagePickerControllerMediaMetadata]?.mutableCopy() as? NSDictionary else {
-            print("Missing metadata")
+            let alertController = UIAlertController(title: "Image Error", message: "There was an error creating the image please try again.", preferredStyle: .Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
+            presentViewController(alertController, animated: true, completion: nil)
             return
         }
 
         guard let location = self.locationManager.location else {
-            print("No location")
+            let alertController = UIAlertController(title: "Location Unavailable", message: "Unable to get the current location. Please try again.", preferredStyle: .Alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
+            presentViewController(alertController, animated: true, completion: nil)
             return
         }
 
+        let maxImageDimension = 1536
+        let maxSize = image.sizeThatFits(CGSize(width: maxImageDimension, height: maxImageDimension))
+        let resizedImage = image.resize(maxSize, quality: .High)
         let mimetype = "image/jpeg"
-        if let data = image.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: locationManager.heading) {
-            print("Upload image")
-            let newImage = UIImage(data: data)
+
+        var metadata: [String: AnyObject] = [:]
+        if let originalMetadata = info[UIImagePickerControllerMediaMetadata]?.mutableCopy() as? NSDictionary {
+            metadata = originalMetadata.mutableCopy() as! [String: AnyObject]
+
+            // Need to strip the orientation info from the EXIF metadata because the resize
+            // routine always returns the data facing up
+            metadata[kCGImagePropertyOrientation as String] = nil
+        }
+
+        if let data = resizedImage.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: locationManager.heading) {
+
+            let documentsDirURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+            let fileURL = documentsDirURL.URLByAppendingPathComponent("test.jpg")
+            data.writeToURL(fileURL, atomically: false)
+
+            print("image", fileURL)
+            let newImage = UIImage(contentsOfFile: fileURL.path!)
             imageView.image = newImage
         }
         else {
