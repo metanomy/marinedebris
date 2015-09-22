@@ -195,6 +195,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
         uploadRequest.bucket = "marine-debris"
         uploadRequest.key = url.lastPathComponent
         uploadRequest.body = url
+        uploadRequest.contentType = "image/jpeg"
 
         uploadRequest.uploadProgress = { bytesSent, totalBytesSent, totalBytesExpectedToSend in
             let completed = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
