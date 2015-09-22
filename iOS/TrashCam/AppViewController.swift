@@ -186,23 +186,50 @@ extension AppViewController {
 extension AppViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     func uploadImageAtURL(url: NSURL) {
-        print(url)
+
+        let uploadRequest = AWSS3TransferManagerUploadRequest()
+        uploadRequest.bucket = "trashcam"
+        uploadRequest.key = url.lastPathComponent
+        uploadRequest.body = url
+
+        let upload = AWSS3TransferManager.defaultS3TransferManager().upload(uploadRequest)
+        upload.continueWithBlock { (task) -> AnyObject! in
+            dispatch_async(dispatch_get_main_queue()) {
+                print("TASK", task)
+
+                if let error = task.error {
+                    print("ERROR:", error)
+                }
+
+                else if let result = task.result {
+                    print("RESULT", result)
+                }
+            }
+
+            return nil
+        }
+    }
+
+    func showErrorAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
+        presentViewController(alertController, animated: true, completion: nil)
     }
 
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 
+        defer {
+            dismissViewControllerAnimated(true) {
+                //self.state = .LocationFound
+            }
+        }
+
         guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
-            let alertController = UIAlertController(title: "Image Error", message: "There was an error creating the image please try again.", preferredStyle: .Alert)
-            alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-            presentViewController(alertController, animated: true, completion: nil)
-            return
+            return showErrorAlert("Image Error", message: "Unable to save image.")
         }
 
         guard let location = self.locationManager.location else {
-            let alertController = UIAlertController(title: "Location Unavailable", message: "Unable to get the current location. Please try again.", preferredStyle: .Alert)
-            alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-            presentViewController(alertController, animated: true, completion: nil)
-            return
+            return showErrorAlert("Location Error", message: "Unable to aquire location.")
         }
 
         let maxImageDimension = 1536
@@ -229,10 +256,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString).jpeg")
 
             if !data.writeToURL(fileURL, atomically: false) {
-                let alertController = UIAlertController(title: "Image Error", message: "There was an error saving the image please try again.", preferredStyle: .Alert)
-                alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-                presentViewController(alertController, animated: true, completion: nil)
-                return
+                return showErrorAlert("Image Error", message: "Unable to save image.")
             }
 
             imageView.image = resizedImage
@@ -240,14 +264,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             uploadImageAtURL(fileURL)
         }
         else {
-            let alertController = UIAlertController(title: "Image Error", message: "There was an error creating the image please try again.", preferredStyle: .Alert)
-            alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-            presentViewController(alertController, animated: true, completion: nil)
-            return
-        }
-
-        dismissViewControllerAnimated(true) {
-            //self.state = .LocationFound
+            showErrorAlert("Image Error", message: "Unable to save image.")
         }
     }
 
