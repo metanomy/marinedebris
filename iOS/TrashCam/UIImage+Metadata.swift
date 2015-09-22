@@ -60,8 +60,6 @@ extension UIImage {
 
         metadata.setValue(gpsMetaData, forKey: kCGImagePropertyGPSDictionary as String)
 
-        print(metadata)
-
         return asDataWithMetadata(metadata, mimetype: mimetype)
     }
 }

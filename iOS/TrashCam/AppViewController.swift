@@ -192,12 +192,11 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
         progressView.hidden = false
 
         let uploadRequest = AWSS3TransferManagerUploadRequest()
-        uploadRequest.bucket = "trashcam"
+        uploadRequest.bucket = "marine-debris"
         uploadRequest.key = url.lastPathComponent
         uploadRequest.body = url
 
         uploadRequest.uploadProgress = { bytesSent, totalBytesSent, totalBytesExpectedToSend in
-            print(bytesSent, totalBytesSent, totalBytesExpectedToSend)
             let completed = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
             dispatch_async(dispatch_get_main_queue()) {
                 self.progressView.progress = Float(completed)
