@@ -16,7 +16,6 @@
 		D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E94C1BB076D400A3C257 /* AppViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		D062E94F1BB0A71700A3C257 /* UIImage+Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E94E1BB0A71700A3C257 /* UIImage+Metadata.swift */; settings = {ASSET_TAGS = (); }; };
 		D0BB8B4D1BB1785600FF58B1 /* UIImage+Dimensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D0BB8B4C1BB1785600FF58B1 /* UIImage+Dimensions.m */; settings = {ASSET_TAGS = (); }; };
-		D0BB8B4F1BB1790100FF58B1 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BB8B4E1BB1790100FF58B1 /* Globals.swift */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +53,6 @@
 		D0BB8B4A1BB1785500FF58B1 /* TrashCam-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TrashCam-Bridging-Header.h"; sourceTree = "<group>"; };
 		D0BB8B4B1BB1785600FF58B1 /* UIImage+Dimensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Dimensions.h"; sourceTree = "<group>"; };
 		D0BB8B4C1BB1785600FF58B1 /* UIImage+Dimensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Dimensions.m"; sourceTree = "<group>"; };
-		D0BB8B4E1BB1790100FF58B1 /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,8 +103,7 @@
 		D062E91A1BB0744E00A3C257 /* TrashCam */ = {
 			isa = PBXGroup;
 			children = (
-				D0BB8B4B1BB1785600FF58B1 /* UIImage+Dimensions.h */,
-				D0BB8B4C1BB1785600FF58B1 /* UIImage+Dimensions.m */,
+				D0BB8B501BB189BB00FF58B1 /* Objective-C */,
 				D062E91B1BB0744E00A3C257 /* AppDelegate.swift */,
 				D062E94C1BB076D400A3C257 /* AppViewController.swift */,
 				D062E94E1BB0A71700A3C257 /* UIImage+Metadata.swift */,
@@ -114,8 +111,6 @@
 				D062E9271BB0744E00A3C257 /* Info.plist */,
 				D062E9241BB0744E00A3C257 /* LaunchScreen.storyboard */,
 				D062E91F1BB0744E00A3C257 /* Main.storyboard */,
-				D0BB8B4A1BB1785500FF58B1 /* TrashCam-Bridging-Header.h */,
-				D0BB8B4E1BB1790100FF58B1 /* Globals.swift */,
 			);
 			path = TrashCam;
 			sourceTree = "<group>";
@@ -136,6 +131,16 @@
 				D062E93D1BB0744E00A3C257 /* Info.plist */,
 			);
 			path = TrashCamUITests;
+			sourceTree = "<group>";
+		};
+		D0BB8B501BB189BB00FF58B1 /* Objective-C */ = {
+			isa = PBXGroup;
+			children = (
+				D0BB8B4B1BB1785600FF58B1 /* UIImage+Dimensions.h */,
+				D0BB8B4C1BB1785600FF58B1 /* UIImage+Dimensions.m */,
+				D0BB8B4A1BB1785500FF58B1 /* TrashCam-Bridging-Header.h */,
+			);
+			name = "Objective-C";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -272,7 +277,6 @@
 				D0BB8B4D1BB1785600FF58B1 /* UIImage+Dimensions.m in Sources */,
 				D062E94F1BB0A71700A3C257 /* UIImage+Metadata.swift in Sources */,
 				D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */,
-				D0BB8B4F1BB1790100FF58B1 /* Globals.swift in Sources */,
 				D062E91C1BB0744E00A3C257 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
