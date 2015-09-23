@@ -36,12 +36,22 @@
                                 <color key="progressTintColor" red="0.80000001192092896" green="1" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="trackTintColor" red="0.80000001192092896" green="1" blue="0.40000000596046448" alpha="0.20000000000000001" colorSpace="calibratedRGB"/>
                             </progressView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" misplaced="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O8x-Rc-p5L">
-                                <rect key="frame" x="253" y="222" width="95" height="20"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O8x-Rc-p5L">
+                                <rect key="frame" x="262" y="222" width="76" height="20"/>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OYV-GA-hLP">
+                                <rect key="frame" x="241" y="283" width="118" height="35"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                                <state key="normal" title="Open Camera">
+                                    <color key="titleColor" red="0.80000001192092896" green="1" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="showCamera" destination="BYZ-38-t0r" eventType="touchUpInside" id="fXC-RD-cyq"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -49,7 +59,9 @@
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="8Da-u5-3zb" secondAttribute="trailing" constant="20" id="2du-mi-cPZ"/>
                             <constraint firstItem="O8x-Rc-p5L" firstAttribute="centerX" secondItem="8Da-u5-3zb" secondAttribute="centerX" id="Evo-rb-VrF"/>
                             <constraint firstItem="8Da-u5-3zb" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" id="Jj7-fZ-fda"/>
+                            <constraint firstItem="OYV-GA-hLP" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="MCv-Rc-FvZ"/>
                             <constraint firstItem="hHa-Ey-Oy1" firstAttribute="leading" secondItem="8Da-u5-3zb" secondAttribute="leading" id="NCP-Tw-RJq"/>
+                            <constraint firstItem="OYV-GA-hLP" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="S7A-Dg-qqg"/>
                             <constraint firstItem="8Da-u5-3zb" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="d4X-U9-0U7"/>
                             <constraint firstItem="O8x-Rc-p5L" firstAttribute="top" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" constant="38" id="hTl-nm-pYx"/>
                             <constraint firstItem="8Da-u5-3zb" firstAttribute="top" secondItem="O8x-Rc-p5L" secondAttribute="bottom" constant="8" id="jME-yK-eCN"/>
@@ -59,6 +71,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="cameraButton" destination="OYV-GA-hLP" id="z2E-WQ-tQA"/>
                         <outlet property="previewImageView" destination="8Da-u5-3zb" id="tpW-hS-XhQ"/>
                         <outlet property="progressView" destination="hHa-Ey-Oy1" id="iff-hT-YWJ"/>
                         <outlet property="statusLabel" destination="O8x-Rc-p5L" id="B3s-Wa-2Cu"/>

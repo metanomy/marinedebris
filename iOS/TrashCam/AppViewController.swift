@@ -15,12 +15,14 @@ class AppViewController: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var previewImageView: UIImageView!
     @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var cameraButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         progressView.hidden = true
         progressView.progress = 0
+        cameraButton.hidden = true
 
         if UIImagePickerController.isSourceTypeAvailable(.Camera) {
             state = .RequestingLocation
@@ -32,6 +34,7 @@ class AppViewController: UIViewController {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        UIApplication.sharedApplication().setStatusBarStyle(UIStatusBarStyle.LightContent, animated: false)
     }
 
     override func viewDidAppear(animated: Bool) {
@@ -56,7 +59,14 @@ class AppViewController: UIViewController {
         case LocationAccessDenied
         case LocationAccessAllowed
         case WaitingForLocation
-        case LocationFound
+        case ReadyToTakePhoto
+        case CameraCancelled
+        case CameraError
+        case PhotoUploading
+    }
+
+    func setState(newState: State) {
+        state = newState
     }
 
     private var state: State = .Loaded {
@@ -64,29 +74,58 @@ class AppViewController: UIViewController {
             if oldValue == state {
                 return
             }
+
             print("State did change:", oldValue, "->", state)
+
             switch state {
+
             case .CameraNotAvailable:
                 statusLabel.text = "Camera not found"
+
             case .RequestingLocation:
                 locationManager.delegate = self
                 locationManager.desiredAccuracy = kCLLocationAccuracyBest
+
             case .RequestingLocationAuthorization:
                 statusLabel.text = "Requesting location access..."
                 locationManager.requestWhenInUseAuthorization()
+
             case .LocationAccessDenied:
                 statusLabel.text = "Location access denied"
                 locationManager.stopUpdatingLocation()
                 showLocationUnavailableMessage()
+
             case .LocationAccessAllowed:
                 startUpdatingLocation()
+
             case .WaitingForLocation:
                 statusLabel.text = "Getting your location..."
                 locationManager.startUpdatingLocation()
-            case .LocationFound:
-                statusLabel.text = "Ready!"
-                print("Location found", locationManager.location)
+
+            case .ReadyToTakePhoto:
+                previewImageView.image = nil
+                progressView.progress = 0
+                progressView.hidden = true
+                cameraButton.hidden = true
+                statusLabel.hidden = true
                 showCamera()
+
+            case .CameraCancelled:
+                statusLabel.hidden = true
+                cameraButton.hidden = false
+
+            case .CameraError:
+                statusLabel.hidden = true
+                cameraButton.hidden = false
+
+            case .PhotoUploading:
+                cameraButton.hidden = true
+                statusLabel.hidden = false
+                statusLabel.text = "Uploading image..."
+                progressView.hidden = false
+                progressView.hidden = false
+                progressView.progress = 0
+
             default:
                 break
             }
@@ -100,8 +139,8 @@ class AppViewController: UIViewController {
         state = .WaitingForLocation
     }
 
-    func showCamera() {
-        guard state == .LocationFound else {
+    @IBAction func showCamera() {
+        guard state == .ReadyToTakePhoto || state == .CameraCancelled else {
             return
         }
         let controller = UIImagePickerController()
@@ -139,8 +178,8 @@ extension AppViewController: CLLocationManagerDelegate {
     }
 
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let _ = locations.last where state < .LocationFound {
-            state = .LocationFound
+        if let _ = locations.last where state < .ReadyToTakePhoto {
+            state = .ReadyToTakePhoto
         }
     }
 }
@@ -174,11 +213,8 @@ extension AppViewController {
     }
 
     private final func showCameraUnavailableMessage() {
-
         let alertController = UIAlertController(title: "Camera Unavailable", message: "This app requires a camera to use.", preferredStyle: .Alert)
-
         alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
-
         presentViewController(alertController, animated: true, completion: nil)
     }
 }
@@ -188,8 +224,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
 
     func uploadImageAtURL(url: NSURL) {
 
-        statusLabel.text = "Uploading image..."
-        progressView.hidden = false
+        state = .PhotoUploading
 
         let uploadRequest = AWSS3TransferManagerUploadRequest()
         uploadRequest.bucket = "marine-debris"
@@ -208,26 +243,20 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
         upload.continueWithBlock { (task) -> AnyObject! in
             dispatch_async(dispatch_get_main_queue()) {
 
-                self.progressView.progress = 0
-                self.progressView.hidden = true
-
                 if let _ = task.error {
                     let alertController = UIAlertController(title: "Upload Failed", message: "Unable to upload image. Please check your network connection and try again.", preferredStyle: .Alert)
                     alertController.addAction(UIAlertAction(title: "Retry", style: .Default, handler: { action in
                         self.uploadImageAtURL(url)
                     }))
                     alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: { action in
-                        self.statusLabel.text = ""
-                        try! NSFileManager.defaultManager().removeItemAtURL(url)
-                        self.showCamera()
+                        self.state = .ReadyToTakePhoto
                     }))
                     self.presentViewController(alertController, animated: true, completion: nil)
                 }
 
                 else {
-                    self.statusLabel.text = ""
                     try! NSFileManager.defaultManager().removeItemAtURL(url)
-                    self.showCamera()
+                    self.state = .ReadyToTakePhoto
                 }
             }
 
@@ -284,22 +313,23 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
             let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString)_\(deviceName).jpg")
 
             if !data.writeToURL(fileURL, atomically: false) {
+                state = .CameraError
                 return showErrorAlert("Image Error", message: "Unable to save image.")
             }
-
-            previewImageView.image = resizedImage
-
-            uploadImageAtURL(fileURL)
+            else {
+                previewImageView.image = resizedImage
+                uploadImageAtURL(fileURL)
+            }
         }
         else {
+            state = .CameraError
             showErrorAlert("Image Error", message: "Unable to save image.")
         }
     }
 
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        dismissViewControllerAnimated(true) {
-            //self.state = .LocationFound
-        }
+        dismissViewControllerAnimated(false, completion: nil)
+        state = .CameraCancelled
     }
 }
 
