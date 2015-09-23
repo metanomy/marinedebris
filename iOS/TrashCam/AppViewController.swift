@@ -20,6 +20,10 @@ class AppViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationDidBecomeActiveNotification, object: nil, queue: nil) { [weak uploadManager] notif in
+            uploadManager?.refreshUploads()
+        }
+
         progressView.hidden = true
         progressView.progress = 0
         cameraButton.hidden = true
@@ -45,6 +49,39 @@ class AppViewController: UIViewController {
         }
     }
 
+    // MARK - Upload manager
+
+    private lazy var uploadManager: UploadManager = {
+
+        let documentsDirURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+        let uploadsDirURL = documentsDirURL.URLByAppendingPathComponent("uploads")
+
+        let uploadManager = UploadManager(uploadsDirectoryURL: uploadsDirURL)
+
+        uploadManager.onUploadDidStart = { [weak self] in
+            dispatch_async(dispatch_get_main_queue()) {
+                self?.statusLabel.text = "Upload started..."
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+            }
+        }
+
+        uploadManager.onUploadDidComplete = { [weak self] in
+            dispatch_async(dispatch_get_main_queue()) {
+                self?.statusLabel.text = "Upload completed..."
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = uploadManager.pendingUploads.count > 0
+            }
+        }
+
+        uploadManager.onUploadDidFail = { [weak self] error in
+            dispatch_async(dispatch_get_main_queue()) {
+                self?.statusLabel.text = "Upload failed. Retrying after delay..."
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+            }
+        }
+
+        return uploadManager
+    }()
+
     // MARK - State
 
     private let locationManager = CLLocationManager()
@@ -62,7 +99,7 @@ class AppViewController: UIViewController {
         case ReadyToTakePhoto
         case CameraCancelled
         case CameraError
-        case PhotoUploading
+        case DidTakePhoto
     }
 
     func setState(newState: State) {
@@ -118,10 +155,10 @@ class AppViewController: UIViewController {
                 statusLabel.hidden = true
                 cameraButton.hidden = false
 
-            case .PhotoUploading:
+            case .DidTakePhoto:
                 cameraButton.hidden = true
                 statusLabel.hidden = false
-                statusLabel.text = "Uploading image..."
+                statusLabel.text = "Saving image..."
                 progressView.hidden = false
                 progressView.hidden = false
                 progressView.progress = 0
@@ -222,48 +259,6 @@ extension AppViewController {
 // MARK - Image picker controller delegate
 extension AppViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
-    func uploadImageAtURL(url: NSURL) {
-
-        state = .PhotoUploading
-
-        let uploadRequest = AWSS3TransferManagerUploadRequest()
-        uploadRequest.bucket = "marine-debris"
-        uploadRequest.key = url.lastPathComponent
-        uploadRequest.body = url
-        uploadRequest.contentType = "image/jpeg"
-
-        uploadRequest.uploadProgress = { bytesSent, totalBytesSent, totalBytesExpectedToSend in
-            let completed = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
-            dispatch_async(dispatch_get_main_queue()) {
-                self.progressView.progress = Float(completed)
-            }
-        }
-
-        let upload = AWSS3TransferManager.defaultS3TransferManager().upload(uploadRequest)
-        upload.continueWithBlock { (task) -> AnyObject! in
-            dispatch_async(dispatch_get_main_queue()) {
-
-                if let _ = task.error {
-                    let alertController = UIAlertController(title: "Upload Failed", message: "Unable to upload image. Please check your network connection and try again.", preferredStyle: .Alert)
-                    alertController.addAction(UIAlertAction(title: "Retry", style: .Default, handler: { action in
-                        self.uploadImageAtURL(url)
-                    }))
-                    alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: { action in
-                        self.state = .ReadyToTakePhoto
-                    }))
-                    self.presentViewController(alertController, animated: true, completion: nil)
-                }
-
-                else {
-                    try! NSFileManager.defaultManager().removeItemAtURL(url)
-                    self.state = .ReadyToTakePhoto
-                }
-            }
-
-            return nil
-        }
-    }
-
     func showErrorAlert(title: String, message: String) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         alertController.addAction(UIAlertAction(title: "Dismiss", style: .Cancel, handler: nil))
@@ -272,64 +267,63 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
 
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 
-        defer {
-            dismissViewControllerAnimated(true) {
-                //self.state = .LocationFound
+        state = .DidTakePhoto
+
+        dismissViewControllerAnimated(true) {
+
+            guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
+                return self.showErrorAlert("Image Error", message: "Unable to acquire image.")
             }
-        }
 
-        guard let image = info[UIImagePickerControllerOriginalImage] as? UIImage else {
-            return showErrorAlert("Image Error", message: "Unable to save image.")
-        }
+            guard let location = self.locationManager.location else {
+                return self.showErrorAlert("Location Error", message: "Unable to aquire location.")
+            }
 
-        guard let location = self.locationManager.location else {
-            return showErrorAlert("Location Error", message: "Unable to aquire location.")
-        }
+            let maxImageDimension = 2048
+            let maxSize = image.sizeThatFits(CGSize(width: maxImageDimension, height: maxImageDimension))
+            let resizedImage = image.resize(maxSize, quality: .High)
+            let mimetype = "image/jpeg"
 
-        let maxImageDimension = 2048
-        let maxSize = image.sizeThatFits(CGSize(width: maxImageDimension, height: maxImageDimension))
-        let resizedImage = image.resize(maxSize, quality: .High)
-        let mimetype = "image/jpeg"
+            var metadata: [String: AnyObject] = [:]
+            if let originalMetadata = info[UIImagePickerControllerMediaMetadata]?.mutableCopy() as? NSDictionary {
+                metadata = originalMetadata.mutableCopy() as! [String: AnyObject]
 
-        var metadata: [String: AnyObject] = [:]
-        if let originalMetadata = info[UIImagePickerControllerMediaMetadata]?.mutableCopy() as? NSDictionary {
-            metadata = originalMetadata.mutableCopy() as! [String: AnyObject]
+                // Need to strip the orientation info from the EXIF metadata because the resize
+                // routine always returns the data facing up
+                metadata[kCGImagePropertyOrientation as String] = nil
+            }
 
-            // Need to strip the orientation info from the EXIF metadata because the resize
-            // routine always returns the data facing up
-            metadata[kCGImagePropertyOrientation as String] = nil
-        }
+            if let data = resizedImage.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: self.locationManager.heading) {
 
-        if let data = resizedImage.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: locationManager.heading) {
+                let dateFormatter = NSDateFormatter()
+                dateFormatter.dateFormat = "yyyy_MM_dd_HH_mm_ss"
+                let dateString = dateFormatter.stringFromDate(NSDate()) as String
 
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.dateFormat = "yyyy_MM_dd_HH_mm_ss"
-            let dateString = dateFormatter.stringFromDate(NSDate()) as String
+                let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet
+                let deviceName = UIDevice.currentDevice().name.componentsSeparatedByCharactersInSet(characterSet).joinWithSeparator("_")
 
-            let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet
-            let deviceName = UIDevice.currentDevice().name.componentsSeparatedByCharactersInSet(characterSet).joinWithSeparator("_")
+                self.previewImageView.image = resizedImage
 
-            let tempDirURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
-            let fileURL = tempDirURL.URLByAppendingPathComponent("\(dateString)_\(deviceName).jpg")
-
-            if !data.writeToURL(fileURL, atomically: false) {
-                state = .CameraError
-                return showErrorAlert("Image Error", message: "Unable to save image.")
+                do {
+                    try self.uploadManager.addImage(data, filename: "\(dateString)_\(deviceName).jpg")
+                    //self.state = .ReadyToTakePhoto
+                } catch {
+                    self.state = .CameraError
+                    return self.showErrorAlert("Image Error", message: "Unable to save image.")
+                }
             }
             else {
-                previewImageView.image = resizedImage
-                uploadImageAtURL(fileURL)
+                self.state = .CameraError
+                self.showErrorAlert("Image Error", message: "Unable to save image.")
             }
-        }
-        else {
-            state = .CameraError
-            showErrorAlert("Image Error", message: "Unable to save image.")
+
         }
     }
 
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        dismissViewControllerAnimated(false, completion: nil)
-        state = .CameraCancelled
+        dismissViewControllerAnimated(false) {
+            self.state = .CameraCancelled
+        }
     }
 }
 

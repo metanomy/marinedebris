@@ -15,6 +15,7 @@
 		D062E93C1BB0744E00A3C257 /* TrashCamUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E93B1BB0744E00A3C257 /* TrashCamUITests.swift */; };
 		D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E94C1BB076D400A3C257 /* AppViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		D062E94F1BB0A71700A3C257 /* UIImage+Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = D062E94E1BB0A71700A3C257 /* UIImage+Metadata.swift */; settings = {ASSET_TAGS = (); }; };
+		D0AD71641BB337CC00D97F04 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AD71631BB337CC00D97F04 /* UploadManager.swift */; settings = {ASSET_TAGS = (); }; };
 		D0BB8B4D1BB1785600FF58B1 /* UIImage+Dimensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D0BB8B4C1BB1785600FF58B1 /* UIImage+Dimensions.m */; settings = {ASSET_TAGS = (); }; };
 		D0BB8B671BB193DA00FF58B1 /* AWSAPIGateway.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0BB8B531BB193DA00FF58B1 /* AWSAPIGateway.framework */; settings = {ASSET_TAGS = (); }; };
 		D0BB8B681BB193DA00FF58B1 /* AWSAutoScaling.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0BB8B541BB193DA00FF58B1 /* AWSAutoScaling.framework */; settings = {ASSET_TAGS = (); }; };
@@ -69,6 +70,7 @@
 		D062E93D1BB0744E00A3C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D062E94C1BB076D400A3C257 /* AppViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppViewController.swift; sourceTree = "<group>"; };
 		D062E94E1BB0A71700A3C257 /* UIImage+Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Metadata.swift"; sourceTree = "<group>"; };
+		D0AD71631BB337CC00D97F04 /* UploadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		D0BB8B4A1BB1785500FF58B1 /* TrashCam-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TrashCam-Bridging-Header.h"; sourceTree = "<group>"; };
 		D0BB8B4B1BB1785600FF58B1 /* UIImage+Dimensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Dimensions.h"; sourceTree = "<group>"; };
 		D0BB8B4C1BB1785600FF58B1 /* UIImage+Dimensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Dimensions.m"; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				D062E9271BB0744E00A3C257 /* Info.plist */,
 				D062E9241BB0744E00A3C257 /* LaunchScreen.storyboard */,
 				D062E91F1BB0744E00A3C257 /* Main.storyboard */,
+				D0AD71631BB337CC00D97F04 /* UploadManager.swift */,
 			);
 			path = TrashCam;
 			sourceTree = "<group>";
@@ -370,6 +373,7 @@
 				D0BB8B4D1BB1785600FF58B1 /* UIImage+Dimensions.m in Sources */,
 				D062E94F1BB0A71700A3C257 /* UIImage+Metadata.swift in Sources */,
 				D062E94D1BB076D400A3C257 /* AppViewController.swift in Sources */,
+				D0AD71641BB337CC00D97F04 /* UploadManager.swift in Sources */,
 				D062E91C1BB0744E00A3C257 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
