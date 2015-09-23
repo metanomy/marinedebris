@@ -66,7 +66,7 @@ class UploadManager {
         }
     }
 
-    private let DELAY_ON_ERROR_SECONDS: Double = 10
+    private let DELAY_ON_ERROR_SECONDS: Double = 30
 
     private func uploadNext() {
 
