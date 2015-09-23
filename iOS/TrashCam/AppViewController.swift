@@ -162,6 +162,9 @@ class AppViewController: UIViewController {
         NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationDidBecomeActiveNotification, object: nil, queue: nil) { [weak uploadManager] notif in
             uploadManager?.refreshUploads()
         }
+
+        uploadManager.refreshUploads()
+        
         showCamera()
     }
 
