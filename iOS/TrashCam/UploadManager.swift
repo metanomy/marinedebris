@@ -109,10 +109,14 @@ class UploadManager {
                     } catch {
                         print("Unable to delete file")
                     }
-                    self.onUploadDidComplete?()
-                }
 
-                self.uploadNext()
+                    self.onUploadDidComplete?()
+
+                    let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC)))
+                    dispatch_after(delayTime, self.queue) {
+                        self.uploadNext()
+                    }
+                }
             }
 
             return nil
