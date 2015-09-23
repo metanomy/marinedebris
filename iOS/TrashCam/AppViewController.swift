@@ -13,19 +13,11 @@ import ImageIO
 class AppViewController: UIViewController {
 
     @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var previewImageView: UIImageView!
-    @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var cameraButton: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationDidBecomeActiveNotification, object: nil, queue: nil) { [weak uploadManager] notif in
-            uploadManager?.refreshUploads()
-        }
-
-        progressView.hidden = true
-        progressView.progress = 0
         cameraButton.hidden = true
 
         if UIImagePickerController.isSourceTypeAvailable(.Camera) {
@@ -60,15 +52,31 @@ class AppViewController: UIViewController {
 
         uploadManager.onUploadDidStart = { [weak self] in
             dispatch_async(dispatch_get_main_queue()) {
-                self?.statusLabel.text = "Upload started..."
+
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+
+                let hasPendingUploads = uploadManager.pendingUploads.count > 0
+                if hasPendingUploads {
+                    self?.statusLabel.text = "Upload started. \(uploadManager.pendingUploads.count) pending..."
+                }
+                else {
+                    self?.statusLabel.text = "Upload started..."
+                }
             }
         }
 
         uploadManager.onUploadDidComplete = { [weak self] in
             dispatch_async(dispatch_get_main_queue()) {
-                self?.statusLabel.text = "Upload completed..."
-                UIApplication.sharedApplication().networkActivityIndicatorVisible = uploadManager.pendingUploads.count > 0
+
+                let hasPendingUploads = uploadManager.pendingUploads.count > 0
+                UIApplication.sharedApplication().networkActivityIndicatorVisible = hasPendingUploads
+
+                if hasPendingUploads {
+                    self?.statusLabel.text = "Upload complete. \(uploadManager.pendingUploads.count) pending..."
+                }
+                else {
+                    self?.statusLabel.text = "No pending uploads."
+                }
             }
         }
 
@@ -97,13 +105,6 @@ class AppViewController: UIViewController {
         case LocationAccessAllowed
         case WaitingForLocation
         case ReadyToTakePhoto
-        case CameraCancelled
-        case CameraError
-        case DidTakePhoto
-    }
-
-    func setState(newState: State) {
-        state = newState
     }
 
     private var state: State = .Loaded {
@@ -140,28 +141,9 @@ class AppViewController: UIViewController {
                 locationManager.startUpdatingLocation()
 
             case .ReadyToTakePhoto:
-                previewImageView.image = nil
-                progressView.progress = 0
-                progressView.hidden = true
-                cameraButton.hidden = true
-                statusLabel.hidden = true
-                showCamera()
-
-            case .CameraCancelled:
-                statusLabel.hidden = true
+                statusLabel.text = "Ready!"
                 cameraButton.hidden = false
-
-            case .CameraError:
-                statusLabel.hidden = true
-                cameraButton.hidden = false
-
-            case .DidTakePhoto:
-                cameraButton.hidden = true
-                statusLabel.hidden = false
-                statusLabel.text = "Saving image..."
-                progressView.hidden = false
-                progressView.hidden = false
-                progressView.progress = 0
+                ready()
 
             default:
                 break
@@ -176,10 +158,18 @@ class AppViewController: UIViewController {
         state = .WaitingForLocation
     }
 
+    func ready() {
+        NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationDidBecomeActiveNotification, object: nil, queue: nil) { [weak uploadManager] notif in
+            uploadManager?.refreshUploads()
+        }
+        showCamera()
+    }
+
     @IBAction func showCamera() {
-        guard state == .ReadyToTakePhoto || state == .CameraCancelled else {
+        guard presentedViewController == nil else {
             return
         }
+
         let controller = UIImagePickerController()
         controller.sourceType = .Camera
         controller.cameraFlashMode = .Auto
@@ -267,7 +257,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
 
     func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 
-        state = .DidTakePhoto
+        statusLabel.text = "Saving image..."
 
         dismissViewControllerAnimated(true) {
 
@@ -302,18 +292,14 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
                 let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet
                 let deviceName = UIDevice.currentDevice().name.componentsSeparatedByCharactersInSet(characterSet).joinWithSeparator("_")
 
-                self.previewImageView.image = resizedImage
-
                 do {
                     try self.uploadManager.addImage(data, filename: "\(dateString)_\(deviceName).jpg")
-                    //self.state = .ReadyToTakePhoto
+                    self.showCamera()
                 } catch {
-                    self.state = .CameraError
                     return self.showErrorAlert("Image Error", message: "Unable to save image.")
                 }
             }
             else {
-                self.state = .CameraError
                 self.showErrorAlert("Image Error", message: "Unable to save image.")
             }
 
@@ -322,7 +308,7 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
 
     func imagePickerControllerDidCancel(picker: UIImagePickerController) {
         dismissViewControllerAnimated(false) {
-            self.state = .CameraCancelled
+
         }
     }
 }
