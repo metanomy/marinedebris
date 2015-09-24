@@ -85,6 +85,7 @@ class AppViewController: UIViewController {
         }
 
         uploadManager.onUploadDidFail = { [weak self] error in
+            print("Upload failed", error)
             dispatch_async(dispatch_get_main_queue()) {
                 self?.statusLabel.text = "Upload failed. Retrying after delay..."
                 UIApplication.sharedApplication().networkActivityIndicatorVisible = false
