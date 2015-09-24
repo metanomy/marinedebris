@@ -25,7 +25,7 @@ extension UIImage {
 
         CGImageDestinationAddImage(destination, image, metadata)
         if !CGImageDestinationFinalize(destination) {
-            print("Unable to finalize")
+            printlog("Unable to finalize")
             return nil
         }
         return data

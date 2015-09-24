@@ -39,14 +39,14 @@ class UploadManager {
     }
 
     func addImage(data: NSData, filename: String) throws {
-        print("Add image:", filename)
+        printlog("Add image:", filename)
 
         let fileURL = uploadsDirectoryURL.URLByAppendingPathComponent(filename)
 
         do {
             try data.writeToURL(fileURL, options: [])
         } catch {
-            print("Unable to save file", error)
+            printlog("Unable to save file", error)
             throw error
         }
 
@@ -54,9 +54,9 @@ class UploadManager {
     }
 
     func refreshUploads() {
-        print("Refresh uploads called")
+        printlog("Refresh uploads called")
         dispatch_async(queue) {
-            print("Refreshing uploads")
+            printlog("Refreshing uploads")
             do {
                 self.pendingUploads = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(self.uploadsDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles).sort { $0.lastPathComponent < $1.lastPathComponent }
 
@@ -64,9 +64,9 @@ class UploadManager {
                     self.pendingUploads.removeAtIndex(index)
                 }
 
-                print("Refreshed uploads", self.currentUpload, self.pendingUploads)
+                printlog("Refreshed uploads", self.currentUpload, self.pendingUploads)
             } catch {
-                print("Unable to list directory:", error)
+                printlog("Unable to list directory:", error)
             }
             self.uploadNext()
         }
@@ -74,7 +74,7 @@ class UploadManager {
 
     private func uploadNext() {
 
-        print("Upload next called")
+        printlog("Upload next called")
 
         guard let next = pendingUploads.first, let nextPath = next.path where currentUpload == nil else {
             return
@@ -87,7 +87,7 @@ class UploadManager {
             uploadNext()
         }
 
-        print("Uploading next", next, pendingUploads)
+        printlog("Uploading next", next, pendingUploads)
 
         let uploadRequest = AWSS3TransferManagerUploadRequest()
         uploadRequest.bucket = "marine-debris"
@@ -114,10 +114,10 @@ class UploadManager {
 
                 else {
                     do {
-                        print("Deleting file", next)
+                        printlog("Deleting file", next)
                         try NSFileManager.defaultManager().removeItemAtURL(next)
                     } catch {
-                        print("Unable to delete file")
+                        printlog("Unable to delete file")
                     }
 
                     self.onUploadDidComplete?()

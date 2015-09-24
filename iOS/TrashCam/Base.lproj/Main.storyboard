@@ -48,8 +48,15 @@
                                     <constraint firstItem="OYV-GA-hLP" firstAttribute="top" secondItem="O8x-Rc-p5L" secondAttribute="bottom" constant="36" id="wMU-8X-Wrj"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aU8-RV-O5T">
+                                <rect key="frame" x="253" y="550" width="95" height="30"/>
+                                <state key="normal" title="Show Log"/>
+                                <connections>
+                                    <segue destination="eVF-rS-YDL" kind="presentation" id="Ea6-6U-3Us"/>
+                                </connections>
+                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tampa Bay Marine Debris 1.0 (Build #0)" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="392-ag-MoJ">
-                                <rect key="frame" x="40" y="564" width="520" height="16"/>
+                                <rect key="frame" x="40" y="526" width="520" height="16"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
@@ -57,13 +64,15 @@
                         </subviews>
                         <color key="backgroundColor" red="0.1215686275" green="0.18823529410000001" blue="0.25098039220000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="aU8-RV-O5T" secondAttribute="bottom" constant="20" id="0TH-iI-h68"/>
                             <constraint firstItem="AOq-EN-Rny" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="7y4-Gx-CTr"/>
                             <constraint firstItem="AOq-EN-Rny" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="8Lh-eB-sWU"/>
                             <constraint firstItem="392-ag-MoJ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="C1S-2q-5U6"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="392-ag-MoJ" secondAttribute="bottom" constant="20" id="fLS-Pz-gNc"/>
                             <constraint firstItem="392-ag-MoJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="hcP-1E-lCW"/>
                             <constraint firstAttribute="trailingMargin" secondItem="392-ag-MoJ" secondAttribute="trailing" constant="20" id="j4P-m1-pSX"/>
                             <constraint firstItem="AOq-EN-Rny" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="jbU-Vt-wyt"/>
+                            <constraint firstItem="aU8-RV-O5T" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="m8L-1K-QWe"/>
+                            <constraint firstItem="aU8-RV-O5T" firstAttribute="top" secondItem="392-ag-MoJ" secondAttribute="bottom" constant="8" id="wCG-a6-mHa"/>
                             <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="AOq-EN-Rny" secondAttribute="trailing" constant="20" id="xls-Ai-iyV"/>
                         </constraints>
                     </view>
@@ -76,6 +85,71 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="83" y="617"/>
+        </scene>
+        <!--Log Entries-->
+        <scene sceneID="VLr-sP-rAR">
+            <objects>
+                <viewController id="3lA-as-ec1" customClass="LogFileViewController" customModule="Marine_Debris" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="C9P-W6-ePl"/>
+                        <viewControllerLayoutGuide type="bottom" id="jY5-ip-BHG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="WgS-1H-ZMn">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="1hZ-63-Wod">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="1hZ-63-Wod" firstAttribute="top" secondItem="WgS-1H-ZMn" secondAttribute="top" id="Gah-hg-KgZ"/>
+                            <constraint firstAttribute="trailing" secondItem="1hZ-63-Wod" secondAttribute="trailing" id="Tz6-ra-Rtc"/>
+                            <constraint firstItem="jY5-ip-BHG" firstAttribute="top" secondItem="1hZ-63-Wod" secondAttribute="bottom" id="fld-S2-UGb"/>
+                            <constraint firstItem="1hZ-63-Wod" firstAttribute="leading" secondItem="WgS-1H-ZMn" secondAttribute="leading" id="wfd-9V-b7o"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Log Entries" id="WYY-ok-Skt">
+                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="WFX-Ii-s5L">
+                            <connections>
+                                <action selector="close:" destination="3lA-as-ec1" id="Pn6-fn-tNT"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="trash" id="fGg-Gf-DTc">
+                            <connections>
+                                <action selector="clear:" destination="3lA-as-ec1" id="cqf-qr-EMO"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="textView" destination="1hZ-63-Wod" id="EUR-j3-4gF"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5Ck-Ah-fjr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1575" y="617"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="6SP-y4-ybK">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eVF-rS-YDL" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="hXT-yE-V6s">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="3lA-as-ec1" kind="relationship" relationship="rootViewController" id="eQt-5K-chW"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SyW-Oa-GoN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="831" y="617"/>
         </scene>
     </scenes>
 </document>
