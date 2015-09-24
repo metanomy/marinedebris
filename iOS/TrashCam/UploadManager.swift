@@ -76,12 +76,16 @@ class UploadManager {
 
         print("Upload next called")
 
-        guard let next = pendingUploads.first where currentUpload == nil else {
+        guard let next = pendingUploads.first, let nextPath = next.path where currentUpload == nil else {
             return
         }
 
         currentUpload = next
         pendingUploads.removeAtIndex(0)
+
+        if !NSFileManager.defaultManager().fileExistsAtPath(nextPath) {
+            uploadNext()
+        }
 
         print("Uploading next", next, pendingUploads)
 
