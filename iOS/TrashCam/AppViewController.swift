@@ -14,6 +14,7 @@ class AppViewController: UIViewController {
 
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var cameraButton: UIButton!
+    @IBOutlet weak var infoLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +26,13 @@ class AppViewController: UIViewController {
         }
         else {
             state = .CameraNotAvailable
+        }
+
+        if let version = NSBundle.mainBundle().releaseVersionNumber, let build = NSBundle.mainBundle().buildVersionNumber {
+            self.infoLabel.text = "Tampa Bay Marine Debris \(version) (\(build))"
+        }
+        else {
+            self.infoLabel.text = "Tampa Bay Marine Debris"
         }
     }
 
@@ -342,4 +350,14 @@ extension String {
 }
 
 
+extension NSBundle {
 
+    var releaseVersionNumber: String? {
+        return self.infoDictionary?["CFBundleShortVersionString"] as? String
+    }
+
+    var buildVersionNumber: String? {
+        return self.infoDictionary?["CFBundleVersion"] as? String
+    }
+    
+}
