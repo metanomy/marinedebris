@@ -4,6 +4,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--App View Controller-->
@@ -86,7 +87,7 @@
             </objects>
             <point key="canvasLocation" x="83" y="617"/>
         </scene>
-        <!--Log Entries-->
+        <!--Log-->
         <scene sceneID="VLr-sP-rAR">
             <objects>
                 <viewController id="3lA-as-ec1" customClass="LogFileViewController" customModule="Marine_Debris" customModuleProvider="target" sceneMemberID="viewController">
@@ -98,11 +99,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="1hZ-63-Wod">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="1hZ-63-Wod">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                <dataDetectorType key="dataDetectorTypes" link="YES"/>
                             </textView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -113,17 +115,24 @@
                             <constraint firstItem="1hZ-63-Wod" firstAttribute="leading" secondItem="WgS-1H-ZMn" secondAttribute="leading" id="wfd-9V-b7o"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Log Entries" id="WYY-ok-Skt">
+                    <navigationItem key="navigationItem" title="Log" id="WYY-ok-Skt">
                         <barButtonItem key="leftBarButtonItem" systemItem="stop" id="WFX-Ii-s5L">
                             <connections>
                                 <action selector="close:" destination="3lA-as-ec1" id="Pn6-fn-tNT"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="trash" id="fGg-Gf-DTc">
-                            <connections>
-                                <action selector="clear:" destination="3lA-as-ec1" id="cqf-qr-EMO"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="trash" id="fGg-Gf-DTc">
+                                <connections>
+                                    <action selector="clear:" destination="3lA-as-ec1" id="cqf-qr-EMO"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Item" systemItem="action" id="G89-6V-tl8">
+                                <connections>
+                                    <action selector="upload:" destination="3lA-as-ec1" id="zuP-LU-rhd"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <outlet property="textView" destination="1hZ-63-Wod" id="EUR-j3-4gF"/>

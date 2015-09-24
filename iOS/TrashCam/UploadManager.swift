@@ -87,7 +87,7 @@ class UploadManager {
             uploadNext()
         }
 
-        printlog("Uploading next", next, pendingUploads)
+        printlog("Uploading next", nextPath, pendingUploads)
 
         let uploadRequest = AWSS3TransferManagerUploadRequest()
         uploadRequest.bucket = "marine-debris"
@@ -113,8 +113,10 @@ class UploadManager {
                 }
 
                 else {
+                    printlog("File uploaded successfully", nextPath)
+
                     do {
-                        printlog("Deleting file", next)
+                        printlog("Deleting file", nextPath)
                         try NSFileManager.defaultManager().removeItemAtURL(next)
                     } catch {
                         printlog("Unable to delete file")

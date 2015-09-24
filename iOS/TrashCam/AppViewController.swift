@@ -74,6 +74,10 @@ class AppViewController: UIViewController {
                 else {
                     self?.statusLabel.text = "Upload started..."
                 }
+
+                if let s = self, let text = s.statusLabel.text {
+                    printlog(text)
+                }
             }
         }
 
@@ -88,6 +92,10 @@ class AppViewController: UIViewController {
                 }
                 else {
                     self?.statusLabel.text = "No pending uploads."
+                }
+
+                if let s = self, let text = s.statusLabel.text {
+                    printlog(text)
                 }
             }
         }
