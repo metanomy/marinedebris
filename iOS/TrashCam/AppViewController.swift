@@ -41,6 +41,10 @@ class AppViewController: UIViewController {
         }
     }
 
+    // MARK - Image resize queue
+
+    let imageQueue = dispatch_queue_create("com.makaluinc.imagequeue", DISPATCH_QUEUE_SERIAL)
+
     // MARK - Upload manager
 
     private lazy var uploadManager: UploadManager = {
@@ -272,40 +276,49 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
                 return self.showErrorAlert("Location Error", message: "Unable to aquire location.")
             }
 
-            let maxImageDimension = 2048
-            let maxSize = image.sizeThatFits(CGSize(width: maxImageDimension, height: maxImageDimension))
-            let resizedImage = image.resize(maxSize, quality: .High)
-            let mimetype = "image/jpeg"
+            dispatch_async(self.imageQueue) {
 
-            var metadata: [String: AnyObject] = [:]
-            if let originalMetadata = info[UIImagePickerControllerMediaMetadata]?.mutableCopy() as? NSDictionary {
-                metadata = originalMetadata.mutableCopy() as! [String: AnyObject]
+                let maxImageDimension = 2048
+                let maxSize = image.sizeThatFits(CGSize(width: maxImageDimension, height: maxImageDimension))
+                let resizedImage = image.resize(maxSize, quality: .High)
+                let mimetype = "image/jpeg"
 
-                // Need to strip the orientation info from the EXIF metadata because the resize
-                // routine always returns the data facing up
-                metadata[kCGImagePropertyOrientation as String] = nil
-            }
+                var metadata: [String: AnyObject] = [:]
+                if let originalMetadata = info[UIImagePickerControllerMediaMetadata]?.mutableCopy() as? NSDictionary {
+                    metadata = originalMetadata.mutableCopy() as! [String: AnyObject]
 
-            if let data = resizedImage.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: self.locationManager.heading) {
+                    // Need to strip the orientation info from the EXIF metadata because the resize
+                    // routine always returns the data facing up
+                    metadata[kCGImagePropertyOrientation as String] = nil
+                }
 
-                let dateFormatter = NSDateFormatter()
-                dateFormatter.dateFormat = "yyyy_MM_dd_HH_mm_ss"
-                let dateString = dateFormatter.stringFromDate(NSDate()) as String
+                if let data = resizedImage.asDataWithMetadata(metadata, mimetype: mimetype, location: location, heading: self.locationManager.heading) {
 
-                let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet
-                let deviceName = UIDevice.currentDevice().name.componentsSeparatedByCharactersInSet(characterSet).joinWithSeparator("_")
+                    let dateFormatter = NSDateFormatter()
+                    dateFormatter.dateFormat = "yyyy_MM_dd_HH_mm_ss"
+                    let dateString = dateFormatter.stringFromDate(NSDate()) as String
 
-                do {
-                    try self.uploadManager.addImage(data, filename: "\(dateString)_\(deviceName).jpg")
-                    self.showCamera()
-                } catch {
-                    return self.showErrorAlert("Image Error", message: "Unable to save image.")
+                    let characterSet = NSCharacterSet.alphanumericCharacterSet().invertedSet
+                    let deviceName = UIDevice.currentDevice().name.truncate(40).componentsSeparatedByCharactersInSet(characterSet).joinWithSeparator("_")
+
+                    do {
+                        try self.uploadManager.addImage(data, filename: "\(dateString)_\(deviceName).jpg")
+                        dispatch_async(dispatch_get_main_queue()) {
+                            self.showCamera()
+                        }
+                    } catch {
+                        dispatch_async(dispatch_get_main_queue()) {
+                            self.showErrorAlert("Image Error", message: "Unable to save image.")
+                        }
+                    }
+                }
+
+                else {
+                    dispatch_async(dispatch_get_main_queue()) {
+                        self.showErrorAlert("Image Error", message: "Unable to save image.")
+                    }
                 }
             }
-            else {
-                self.showErrorAlert("Image Error", message: "Unable to save image.")
-            }
-
         }
     }
 
@@ -313,6 +326,17 @@ extension AppViewController: UIImagePickerControllerDelegate, UINavigationContro
         dismissViewControllerAnimated(false) {
 
         }
+    }
+}
+
+
+extension String {
+
+    func truncate(len: Int) -> String {
+        if characters.count <= len {
+            return self
+        }
+        return substringToIndex(startIndex.advancedBy(len))
     }
 }
 
