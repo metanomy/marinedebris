@@ -59,14 +59,18 @@ class UploadManager {
             print("Refreshing uploads")
             do {
                 self.pendingUploads = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(self.uploadsDirectoryURL, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles).sort { $0.lastPathComponent < $1.lastPathComponent }
+
+                if let currentUpload = self.currentUpload, let index = self.pendingUploads.indexOf(currentUpload) {
+                    self.pendingUploads.removeAtIndex(index)
+                }
+
+                print("Refreshed uploads", self.currentUpload, self.pendingUploads)
             } catch {
                 print("Unable to list directory:", error)
             }
             self.uploadNext()
         }
     }
-
-    private let DELAY_ON_ERROR_SECONDS: Double = 30
 
     private func uploadNext() {
 
@@ -78,6 +82,8 @@ class UploadManager {
 
         currentUpload = next
         pendingUploads.removeAtIndex(0)
+
+        print("Uploading next", next, pendingUploads)
 
         let uploadRequest = AWSS3TransferManagerUploadRequest()
         uploadRequest.bucket = "marine-debris"
@@ -97,14 +103,14 @@ class UploadManager {
 
                     self.onUploadDidFail?(error)
 
-                    let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(self.DELAY_ON_ERROR_SECONDS * Double(NSEC_PER_SEC)))
-                    dispatch_after(delayTime, self.queue) {
-                        self.refreshUploads()
-                    }
+                    sleep(5)
+
+                    self.refreshUploads()
                 }
 
                 else {
                     do {
+                        print("Deleting file", next)
                         try NSFileManager.defaultManager().removeItemAtURL(next)
                     } catch {
                         print("Unable to delete file")
@@ -112,10 +118,7 @@ class UploadManager {
 
                     self.onUploadDidComplete?()
 
-                    let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC)))
-                    dispatch_after(delayTime, self.queue) {
-                        self.uploadNext()
-                    }
+                    self.uploadNext()
                 }
             }
 
