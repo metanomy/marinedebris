@@ -1,0 +1,11 @@
+rootProject.name = 'Marine Debris'
+
+include ':app'
+
+// react-native-image-picker dependency
+include ':react-native-image-picker'
+project(':react-native-image-picker').projectDir = new File(settingsDir, '../node_modules/react-native-image-picker/android')
+
+// react-native-device-info dependency
+include ':react-native-device-info'
+project(':react-native-device-info').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-device-info/android')
