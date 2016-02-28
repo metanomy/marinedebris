@@ -20,20 +20,25 @@ const App = React.createClass({
   getInitialState() {
     return {
       isUploading: false,
-      locationAvailable: true, // start with the assumption we'll get a location
-      lastPosition: 'unknown',
+      locationAvailable: false,
+      lastPosition: null,
     }
   },
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      (lastPosition) => {
-        this.setState({
-          lastPosition,
-          locationAvailable: true,
-        })
-      },
-      (error) => {
+    let locationErrorCount = 0
+
+    const locationSuccess = (lastPosition) => {
+      locationErrorCount = 0
+      this.setState({
+        lastPosition,
+        locationAvailable: true,
+      })
+    }
+
+    const locationError = (error) => {
+      locationErrorCount++
+      if (locationErrorCount > 1) {
         Alert.alert(
           'Unable to locate you',
           error
@@ -41,15 +46,13 @@ const App = React.createClass({
         this.setState({
           locationAvailable: false,
         })
-      },
-      {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-    )
-    this.watchID = navigator.geolocation.watchPosition((lastPosition) => {
-      this.setState({
-        lastPosition,
-        locationAvailable: true,
-      })
-    });
+      }
+    }
+
+    const locationOptions = {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+
+    navigator.geolocation.getCurrentPosition(locationSuccess, locationError, locationOptions)
+    this.watchID = navigator.geolocation.watchPosition(locationSuccess, locationError, locationOptions)
   },
 
   componentWillUnmount: function() {
@@ -122,6 +125,17 @@ const App = React.createClass({
         return
       }
 
+      const {lastPosition} = this.state
+
+      if (!lastPosition) {
+        console.log('Unable to get location')
+        Alert.alert(
+          'Unable to upload photo.',
+          'No location available. Please check that the GPS is enabled.'
+        )
+        return
+      }
+
       const fileName = [
         moment().format('YYYY_MM_DD_HH_mm_ss'),
         // Platform.OS,
@@ -129,7 +143,6 @@ const App = React.createClass({
         trashType.toLowerCase(),
       ].join('-')
 
-      const {lastPosition} = this.state
       const geoJSON = {
         type: "Feature",
         geometry: {
@@ -173,15 +186,15 @@ const App = React.createClass({
         </View>
 
         <View style={styles.uploadContainer}>
-          {!this.state.locationAvailable ? (
-            <Text style={styles.uploadText}>
-              Location Unavailable
-            </Text>
-          ) : this.state.isUploading && (
-            <Text style={styles.uploadText}>
-              Uploading...
-            </Text>
-          )}
+          <Text style={styles.uploadText}>
+            {this.state.isUploading ? (
+              'Uploading photo...'
+            ) : this.state.locationAvailable ? (
+              `Ready`
+            ) : (
+              'Attempting to get location…'
+            )}
+          </Text>
         </View>
       </View>
     )
