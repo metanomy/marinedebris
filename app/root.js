@@ -110,6 +110,10 @@ const App = React.createClass({
   handlePress(trashType) {
     UIImagePickerManager.launchCamera({
       mediaType: 'photo',
+      maxWidth: 1280,
+      maxHeight: 1280,
+      quality: 0.8,
+      noData: true,
     }, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker')
@@ -161,7 +165,7 @@ const App = React.createClass({
         },
       }
 
-      this.uploadFile(this.getFormData(response.data, `${fileName}.jpg`, 'image/jpeg'))
+      this.uploadFile(this.getFormData({uri: response.uri, name: `${fileName}.jpg`, type: 'image/jpeg'}, `${fileName}.jpg`, 'image/jpeg'))
       this.uploadFile(this.getFormData(JSON.stringify(geoJSON), `${fileName}.json`, 'application/json'))
 
       this.setState({
